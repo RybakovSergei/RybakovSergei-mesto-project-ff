@@ -22,6 +22,11 @@
       cardImage.alt = cardData.name;
       cardTitle.textContent = cardData.name;
 
+      // Добавляем обработчик события клика на изображение
+      cardImage.addEventListener('click', function() {
+        openImagePopup(cardData);
+      });
+
       
       deleteButton.addEventListener('click', () => deleteCallback(cardElement));
       return cardElement;
@@ -109,6 +114,53 @@ likeButtons.forEach(likeButton => {
     }
   });
 });
+
+
+
+
+
+
+function openImagePopup(cardData) {
+  const imagePopup = document.querySelector('.popup_type_image');
+  const popupImage = imagePopup.querySelector('.popup__image');
+  const popupCaption = imagePopup.querySelector('.popup__caption');
+
+  popupImage.src = cardData.link;
+  popupImage.alt = cardData.name;
+  popupCaption.textContent = cardData.name; // Предполагается, что у вас есть поле description в объекте cardData
+
+  imagePopup.classList.add('popup_is-opened');
+}
+
+
+
+
+
+
+
+
+
+
+
+// Найдем кнопку закрытия popup с изображением
+const imagePopupCloseButton = document.querySelector('.popup_type_image .popup__close');
+
+// Добавим обработчик события клика на кнопку закрытия popup
+imagePopupCloseButton.addEventListener('click', closeImagePopup);
+
+// Функция для закрытия popup с изображением
+function closeImagePopup() {
+  const imagePopup = document.querySelector('.popup_type_image');
+  imagePopup.classList.remove('popup_is-opened');
+}
+
+
+
+
+
+
+
+
 
 
 
