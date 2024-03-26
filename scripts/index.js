@@ -27,7 +27,6 @@
         openImagePopup(cardData);
       });
 
-      
       deleteButton.addEventListener('click', () => deleteCallback(cardElement));
       return cardElement;
     }
@@ -56,7 +55,7 @@ const newPlaceForm = document.forms['new-place'];
 newPlaceForm.addEventListener('submit', function (event) {
   event.preventDefault();
 
-  // Получаем значения из полей формы
+  // Получим значения из полей формы
   const placeNameInput = this.elements['place-name'];
   const linkInput = this.elements['link'];
 
@@ -76,13 +75,11 @@ newPlaceForm.addEventListener('submit', function (event) {
 
 // Сделаем кнопку "Добавить место"
 const addButton = document.querySelector('.profile__add-button');
-// Найдем соответствующий popup
 const newPlacePopup = document.querySelector('.popup_type_new-card');
-// Функция для popup
 function openNewPlacePopup() {
   newPlacePopup.classList.add('popup_is-opened');
 }
-// Обработчик события "Добавить место"
+
 addButton.addEventListener('click', openNewPlacePopup);
 
 // Кнопка закрытия меню добавления карточек
@@ -96,29 +93,18 @@ function closeNewCardPopup() {
 // Закрытие меню добавления карточек
 closeButton.addEventListener('click', closeNewCardPopup);
 
-
-
-// Найдем кнопку лайка на странице
+// Добавим обработчик события клика на каждую кнопку лайка
 const likeButtons = document.querySelectorAll('.card__like-button');
 
-// Добавим обработчик события клика на каждую кнопку лайка
 likeButtons.forEach(likeButton => {
   likeButton.addEventListener('click', function() {
-    // Проверяем, есть ли у кнопки класс "card__like-button_is-active"
     if (likeButton.classList.contains('card__like-button_is-active')) {
-      // Если класс есть, то удаляем его
       likeButton.classList.remove('card__like-button_is-active');
     } else {
-      // Если класса нет, то добавляем его
       likeButton.classList.add('card__like-button_is-active');
     }
   });
 });
-
-
-
-
-
 
 function openImagePopup(cardData) {
   const imagePopup = document.querySelector('.popup_type_image');
@@ -127,28 +113,14 @@ function openImagePopup(cardData) {
 
   popupImage.src = cardData.link;
   popupImage.alt = cardData.name;
-  popupCaption.textContent = cardData.name; // Предполагается, что у вас есть поле description в объекте cardData
+  popupCaption.textContent = cardData.name;
 
   imagePopup.classList.add('popup_is-opened');
 }
 
-
-
-
-
-
-
-
-
-
-
-// Найдем кнопку закрытия popup с изображением
-const imagePopupCloseButton = document.querySelector('.popup_type_image .popup__close');
-
 // Добавим обработчик события клика на кнопку закрытия popup
+const imagePopupCloseButton = document.querySelector('.popup_type_image .popup__close');
 imagePopupCloseButton.addEventListener('click', closeImagePopup);
-
-// Функция для закрытия popup с изображением
 function closeImagePopup() {
   const imagePopup = document.querySelector('.popup_type_image');
   imagePopup.classList.remove('popup_is-opened');
