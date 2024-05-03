@@ -1,10 +1,24 @@
 
 // index.js
 
+// import 'regenerator-runtime/runtime';
+
 import '../pages/index.css'; 
 import {initialCards} from '../components/cards.js';
 
-// Далее ваш код
+import logoImage from '../images/logo.svg';
+import avatarImage from '../images/avatar.jpg';
+
+const defaultCards = [
+  { name: 'Логотип', link: logoImage },
+  { name: 'Аватар', link: avatarImage },
+];
+
+const logo = document.querySelector('.logo');
+logo.src = logoImage;
+
+const avatar = document.querySelector('.profile__image');
+avatar.src = avatarImage;
 
 
     // Функция для создания элемента карточки
@@ -77,6 +91,7 @@ const addButton = document.querySelector('.profile__add-button');
 const newPlacePopup = document.querySelector('.popup_type_new-card');
 function openNewPlacePopup() {
   newPlacePopup.classList.add('popup_is-opened');
+  openPopup(newPlacePopup);
 }
 
 addButton.addEventListener('click', openNewPlacePopup);
@@ -127,6 +142,42 @@ function closeImagePopup() {
 
 
 
+//кнопка "Редактировать профиль"
+const editButton = document.querySelector('.profile__edit-button');
+
+function openEditProfilePopup() {
+  const editProfilePopup = document.querySelector('.popup_type_edit');
+  editProfilePopup.classList.add('popup_is-opened');
+}
+
+editButton.addEventListener('click', openEditProfilePopup);
+
+
+
+// Функция для закрытия модального окна редактирования профиля
+function closeEditProfilePopup() {
+  const editProfilePopup = document.querySelector('.popup_type_edit');
+  editProfilePopup.classList.remove('popup_is-opened');
+}
+
+// Найдем кнопку закрытия модального окна редактирования профиля
+const editProfileCloseButton = document.querySelector('.popup_type_edit .popup__close');
+
+// Добавим обработчик события для кнопки закрытия модального окна редактирования профиля
+editProfileCloseButton.addEventListener('click', closeEditProfilePopup);
+
+// Найдем все модальные окна на странице
+const popups = document.querySelectorAll('.popup');
+
+// Добавим обработчик события клика для каждого модального окна
+popups.forEach(popup => {
+  popup.addEventListener('click', function(event) {
+    // Если клик произошел на оверлее (без модального контента)
+    if (event.target === popup) {
+      popup.classList.remove('popup_is-opened'); // Закрыть модальное окно
+    }
+  });
+});
 
 
 
@@ -139,13 +190,53 @@ function closeImagePopup() {
 
 
 
+// Функция для закрытия модального окна при нажатии на Esc
+function closeOnEsc(event) {
+  console.log('closeOnEsc is called'); // добавляем отладочный вывод
+  if (event.key === 'Escape') {
+    console.log('Escape key pressed'); // добавляем отладочный вывод
+    const openedPopup = document.querySelector('.popup.popup_is-opened');
+    if (openedPopup) {
+      closePopup(openedPopup);
+    }
+  }
+}
 
+// Функция для открытия модального окна
+function openPopup(popup) {
+  popup.classList.add('popup_is-opened');
+  document.addEventListener('keydown', closeOnEsc); // Добавляем обработчик события для закрытия по Esc
+  console.log('keydown event listener added'); // добавляем отладочный вывод
+}
 
+// Функция для закрытия модального окна
+function closePopup(popup) {
+  popup.classList.remove('popup_is-opened');
+  document.removeEventListener('keydown', closeOnEsc); // Удаляем обработчик события для закрытия по Esc
+}
 
+// Найдем все кнопки открытия модальных окон
+const openPopupButtons = document.querySelectorAll('.open-popup-button');
 
+// Добавим обработчик события клика для каждой кнопки
+openPopupButtons.forEach(button => {
+  button.addEventListener('click', function() {
+    const popupId = this.dataset.popupId;
+    const popup = document.getElementById(popupId);
+    openPopup(popup);
+  });
+});
 
+// Найдем все кнопки закрытия модальных окон
+const closePopupButtons = document.querySelectorAll('.popup__close');
 
-
+// Добавим обработчик события клика для каждой кнопки
+closePopupButtons.forEach(button => {
+  button.addEventListener('click', function() {
+    const popup = this.closest('.popup');
+    closePopup(popup);
+  });
+});
 
 
 
