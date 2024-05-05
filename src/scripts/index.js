@@ -1,10 +1,8 @@
 
-// index.js
-
-// import 'regenerator-runtime/runtime';
-
 import '../pages/index.css'; 
 import {initialCards} from '../components/cards.js';
+import Modal from '@components/modal.js';
+import { openModal, closeModal, openPopup, closePopup, closeOnEsc, closePopupsOnClick} from './modal.js';
 
 import logoImage from '../images/logo.svg';
 import avatarImage from '../images/avatar.jpg';
@@ -20,7 +18,6 @@ logo.src = logoImage;
 const avatar = document.querySelector('.profile__image');
 avatar.src = avatarImage;
 
-
     // Функция для создания элемента карточки
     function createCardElement(cardData, deleteCallback) {
       const cardTemplate = document.querySelector('#card-template').content;
@@ -35,6 +32,18 @@ avatar.src = avatarImage;
       cardImage.alt = cardData.name;
       cardTitle.textContent = cardData.name;
 
+      likeButton.addEventListener('click', function() {
+        toggleLike(likeButton); // Функция, которая меняет состояние кнопки лайка
+      });
+
+      function toggleLike(likeButton) {
+        likeButton.classList.toggle('card__like-button_is-active');
+      }
+
+      likeButton.addEventListener('click', function() {
+        toggleLike(this);
+      });
+      
       // Добавляем обработчик события клика на изображение
       cardImage.addEventListener('click', function() {
         openImagePopup(cardData);
@@ -80,7 +89,7 @@ newPlaceForm.addEventListener('submit', function (event) {
   // Создаем элемент карточки и добавляем его на страницу
   const newCardElement = createCardElement(newCardData, deleteCard);
   const placesList = document.querySelector('.places__list');
-  placesList.appendChild(newCardElement);
+  placesList.insertBefore(newCardElement, placesList.firstChild);
 
   // Очищаем поля формы
   this.reset();
@@ -95,6 +104,11 @@ function openNewPlacePopup() {
 }
 
 addButton.addEventListener('click', openNewPlacePopup);
+
+// Функция для закрытия модального окна добавления новой карточки
+function closeNewPlacePopup() {
+  newPlacePopup.classList.remove('popup_is-opened');
+}
 
 // Кнопка закрытия меню добавления карточек
 const closeButton = document.querySelector('.popup_type_new-card .popup__close');
@@ -140,19 +154,20 @@ function closeImagePopup() {
   imagePopup.classList.remove('popup_is-opened');
 }
 
-
-
 //кнопка "Редактировать профиль"
 const editButton = document.querySelector('.profile__edit-button');
 
 function openEditProfilePopup() {
   const editProfilePopup = document.querySelector('.popup_type_edit');
   editProfilePopup.classList.add('popup_is-opened');
+
+  // Устанавливаем значение "Жак-ив кусто" в поля "Имя" и "О себе"
+  nameInput.value = "Жак-ив кусто";
+  aboutInput.value = "Исследователь океана";
+
 }
 
 editButton.addEventListener('click', openEditProfilePopup);
-
-
 
 // Функция для закрытия модального окна редактирования профиля
 function closeEditProfilePopup() {
@@ -168,52 +183,6 @@ editProfileCloseButton.addEventListener('click', closeEditProfilePopup);
 
 // Найдем все модальные окна на странице
 const popups = document.querySelectorAll('.popup');
-
-// Добавим обработчик события клика для каждого модального окна
-popups.forEach(popup => {
-  popup.addEventListener('click', function(event) {
-    // Если клик произошел на оверлее (без модального контента)
-    if (event.target === popup) {
-      popup.classList.remove('popup_is-opened'); // Закрыть модальное окно
-    }
-  });
-});
-
-
-
-
-
-
-
-
-
-
-
-
-// Функция для закрытия модального окна при нажатии на Esc
-function closeOnEsc(event) {
-  console.log('closeOnEsc is called'); // добавляем отладочный вывод
-  if (event.key === 'Escape') {
-    console.log('Escape key pressed'); // добавляем отладочный вывод
-    const openedPopup = document.querySelector('.popup.popup_is-opened');
-    if (openedPopup) {
-      closePopup(openedPopup);
-    }
-  }
-}
-
-// Функция для открытия модального окна
-function openPopup(popup) {
-  popup.classList.add('popup_is-opened');
-  document.addEventListener('keydown', closeOnEsc); // Добавляем обработчик события для закрытия по Esc
-  console.log('keydown event listener added'); // добавляем отладочный вывод
-}
-
-// Функция для закрытия модального окна
-function closePopup(popup) {
-  popup.classList.remove('popup_is-opened');
-  document.removeEventListener('keydown', closeOnEsc); // Удаляем обработчик события для закрытия по Esc
-}
 
 // Найдем все кнопки открытия модальных окон
 const openPopupButtons = document.querySelectorAll('.open-popup-button');
@@ -238,6 +207,70 @@ closePopupButtons.forEach(button => {
   });
 });
 
+// Функция для закрытия модального окна редактирования профиля при нажатии на Esc
+function closeEditProfileOnEsc(event) {
+  if (event.key === 'Escape') {
+    const editProfilePopup = document.querySelector('.popup_type_edit.popup_is-opened');
+    if (editProfilePopup) {
+      closeEditProfilePopup();
+    }
+  }
+}
 
+// Добавляем обработчик события для закрытия модального окна редактирования профиля при нажатии на Esc
+document.addEventListener('keydown', closeEditProfileOnEsc);
 
+// Функция для закрытия модального окна изображения при нажатии на Esc
+function closeImagePopupOnEsc(event) {
+  if (event.key === 'Escape') {
+    const imagePopup = document.querySelector('.popup_type_image.popup_is-opened');
+    if (imagePopup) {
+      closeImagePopup();
+    }
+  }
+}
 
+// Добавляем обработчик события для закрытия модального окна изображения при нажатии на Esc
+document.addEventListener('keydown', closeImagePopupOnEsc);
+
+// Получаем элементы полей "Имя" и "О себе" и сохраняем их в переменные
+const editProfilePopup = document.querySelector('.popup_type_edit');
+const nameInput = editProfilePopup.querySelector('.popup__input_type_name');
+const aboutInput = editProfilePopup.querySelector('.popup__input_type_description');
+
+// Устанавливаем значение "Жак-ив кусто" в поля "Имя" и "О себе"
+nameInput.value = "Жак-ив кусто";
+aboutInput.value = "Исследователь океана";
+
+// Находим форму в DOM
+const editProfileForm = document.querySelector('.popup_type_edit form');
+
+// Обработчик «отправки» формы
+function handleFormSubmit(evt) {
+    evt.preventDefault(); // Отменяем стандартную отправку формы
+
+    // Получаем значения полей nameInput и aboutInput из свойства value
+    const newName = nameInput.value;
+    const newAbout = aboutInput.value;
+
+    // Выбираем элементы, куда должны быть вставлены новые значения
+    const profileName = document.querySelector('.profile__title');
+    const profileDescription = document.querySelector('.profile__description');
+
+    // Вставляем новые значения с помощью textContent
+    profileName.textContent = newName;
+    profileDescription.textContent = newAbout;
+
+    // Закрываем попап после сохранения
+    closeEditProfilePopup();
+}
+
+// Прикрепляем обработчик к форме
+editProfileForm.addEventListener('submit', handleFormSubmit);
+
+closePopupButtons.forEach(button => {
+  button.addEventListener('click', function() {
+    const popup = this.closest('.popup');
+    closeModal(popup);
+  });
+});

@@ -60,5 +60,10 @@ module.exports = {
         { from: './src/images', to: 'images' }, // копируем изображения из папки src/images в папку dist/images
       ],
     }),
-  ]
+  ],
+  resolve: {
+    alias: {
+      '@components': path.resolve(__dirname, 'src/components')
+    }
+  }
 }
